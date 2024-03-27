@@ -1,17 +1,57 @@
-import React from 'react';
+import { useContext } from "react";
+import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import { AuthProvider, AuthContext } from "context/AuthContext";
+import Home from "pages/Home";
+import Login from "pages/Login";
+import Profile from "pages/Profile";
+import RouteGuard from "components/RouteGuard";
+
+function Navigation() {
+  const { isLoggedIn } = useContext(AuthContext);
+
+  return (
+    <nav>
+      <ul>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        {isLoggedIn ? (
+          <>
+            <li>
+              <Link to="/profile">Profile</Link>
+            </li>
+          </>
+        ) : (
+          <li>
+            <Link to="/login">Login</Link>
+          </li>
+        )}
+      </ul>
+    </nav>
+  );
+}
 
 function App() {
   return (
-    <div style={{ textAlign: 'center' }}>
-      <header>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <Navigation />
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/profile"
+              element={
+                <RouteGuard>
+                  <Profile />
+                </RouteGuard>
+              }
+            />
+          </Routes>
+        </main>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
